@@ -17,10 +17,12 @@
             </tr>
             </thead>
             <tbody>
-            <tr>
-              <td>
-
-              </td>
+            <tr v-for="item in list">
+              <td>{{ item.firstname }}</td>
+              <td>{{ item.surname }}</td>
+              <td>{{ getSex(item.sex) }}</td>
+              <td>{{ getDate(item.date) }}</td>
+              <td>{{ item.phone }}</td>
             </tr>
             </tbody>
           </table>
@@ -48,12 +50,32 @@ export default {
     };
   },
   methods: {
-    getData() {
-      console.log(json);
+
+    getDate(date) {
+      var d = new Date(date),
+          month = '' + (d.getMonth() + 1),
+          day = '' + d.getDate(),
+          year = d.getFullYear();
+
+      if (month.length < 2)
+        month = '0' + month;
+      if (day.length < 2)
+        day = '0' + day;
+
+      return [day, month, year].join('.');
+    },
+    getSex(sex) {
+      if (sex === 'f') {
+        return 'Naine';
+      } else {
+        return 'Mees';
+      }
+    },
+    paginate(array, pageSize, pageNumber) {
+      return array.slice((pageNumber - 1) * pageSize, pageNumber * pageSize);
     },
   },
   mounted() {
-    this.getData();
     // axios
     //     .get('https://midaiganes.irw.ee/api/list?limit=500')
     //     .then(response => (
