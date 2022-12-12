@@ -9,10 +9,10 @@
           <table>
             <thead>
             <tr>
-              <th @click="sort('firstname')">Eesnimi</th>
-              <th @click="sort('surname')">Perekonnanimi</th>
-              <th @click="sort('sex')">Sugu</th>
-              <th @click="sort('personal_code')">Sünnikuupäev</th>
+              <th class="pointer" role="button" @click="sort('firstname')">Eesnimi</th>
+              <th class="pointer" role="button" @click="sort('surname')">Perekonnanimi</th>
+              <th class="pointer" role="button" @click="sort('sex')">Sugu</th>
+              <th class="pointer" role="button" @click="sort('dob')">Sünnikuupäev</th>
               <th>Telefon</th>
             </tr>
             </thead>
@@ -21,13 +21,11 @@
               <tr @click="toggle(item.id)" :class="{ opened: opened.includes(item.id) }">
                 <td>{{ item.firstname }}</td>
                 <td>{{ item.surname }}</td>
-                <td>{{ getSex(item.sex) }}</td>
-                <td>{{ dateOfBirth(item.personal_code) }}</td>
+                <td>{{ item.sex }}</td>
+                <td>{{ item.dob }}</td>
                 <td>{{ item.phone }}</td>
               </tr>
               <tr v-if="opened.includes(item.id)">
-                <!--              <td colspan="2">ON!</td>-->
-                <!--                {{ tab(item.id) }}-->
                 <td>
                   <div class="flex-container">
                     <div id="image" class="flex-child magenta">
@@ -47,12 +45,12 @@
 
         </div>
         <nav class="pagination-container">
-          <button :disabled="currentPage===1" class="pagination-button" id="prev-button" title="Previous page"
+          <button :disabled="currentPage===1" class="pagination-button pointer" id="prev-button" title="Previous page"
                   aria-label="Previous page"
                   @click="prevPage">&lt
           </button>
-          <button id="pagination-numbers" @click="currentPage = page" v-for="page in pages">{{ page }}</button>
-          <button :disabled="currentPage===pages" class="pagination-button" id="next-button" title="Next page"
+          <button class="pointer" id="pagination-numbers" @click="currentPage = page" v-for="page in pages">{{ page }}</button>
+          <button :disabled="currentPage===pages" class="pagination-button pointer" id="next-button" title="Next page"
                   aria-label="Next page" @click="nextPage">
             &gt
           </button>
@@ -74,19 +72,38 @@ export default {
   data() {
     return {
       json: json,
-      list: json.list,
+      // list: json.list,
       currentSort: '',
-      currentSortDir: 'default',
+      currentSortDir: '',
       pageSize: 10,
       currentPage: 1,
       pages: 0,
       articleId: '',
       opened: [],
       sortingDate: '',
-
+      tableArray: [],
     };
   },
   methods: {
+
+    generateTableArray() {
+      let list = this.json.list;
+      let i = 0;
+      while (list[i]) {
+        this.tableArray.push({
+          firstname: list[i].firstname,
+          surname: list[i].surname,
+          sex: this.convertSex(list[i].sex),
+          dob: this.dateOfBirth(list[i].personal_code),
+          phone: list[i].phone,
+          image: list[i].image,
+          body: list[i].body,
+          id: list[i].id
+        })
+        i++;
+      }
+    },
+
 
     toggle(articleId) {
       const index = this.opened.indexOf(articleId);
@@ -103,21 +120,15 @@ export default {
       if (s === this.currentSort) {
         this.currentSortDir = this.currentSortDir === 'asc' ? 'desc' : 'asc';
       }
-      // if (s === this.currentSort) {
-      //   this.currentSortDir = this.currentSortDir === 'desc' ? 'default' : 'desc';
-      // }
-      // if (s === this.currentSort) {
-      //   this.currentSortDir = this.currentSortDir === 'default' ? 'asc' : 'default';
-      // }
       this.currentSort = s;
     },
 
     pageCounter() {
-      this.pages = Math.ceil(this.list.length / this.pageSize);
+      this.pages = Math.ceil(this.tableArray.length / this.pageSize);
     },
 
     nextPage() {
-      if ((this.currentPage * this.pageSize) < this.list.length) this.currentPage++;
+      if ((this.currentPage * this.pageSize) < this.tableArray.length) this.currentPage++;
     },
 
     prevPage() {
@@ -125,7 +136,7 @@ export default {
     },
 
     articleLink(id) {
-      return 'http://proovitoo.twn.ee/article/'+id;
+      return 'http://proovitoo.twn.ee/article/' + id;
     },
 
     dateOfBirth(personalCode) {
@@ -144,7 +155,7 @@ export default {
       return date;
     },
 
-    getSex(sex) {
+    convertSex(sex) {
       if (sex === 'f') {
         return 'Naine';
       } else {
@@ -162,12 +173,14 @@ export default {
   computed: {
 
     sortedList() {
-      return this.list.sort((a, b) => {
+      return this.tableArray.sort((a, b) => {
+        // return this.list.sort((a, b) => {
         let modifier = 1;
-        // if (this.currentSortDir === 'default') modifier = 0;
         if (this.currentSortDir === 'desc') modifier = -1;
         if (a[this.currentSort] < b[this.currentSort]) return -1 * modifier;
         if (a[this.currentSort] > b[this.currentSort]) return 1 * modifier;
+        if (a[this.currentSort] === b[this.currentSort]) return 0 * modifier;
+
         return 0;
       }).filter((row, index) => {
         let start = (this.currentPage - 1) * this.pageSize;
@@ -178,8 +191,11 @@ export default {
 
   },
   mounted() {
-    console.log(this.list);
+    console.log(this.json.list);
+    this.generateTableArray();
+    console.log(this.tableArray);
     this.pageCounter();
+
     // axios
     //     .get('https://midaiganes.irw.ee/api/list?limit=500')
     //     .then(response => (
@@ -236,5 +252,8 @@ export default {
 .pagination-number.active {
   color: #fff;
   background: #0085b6;
+}
+.pointer {
+  cursor: pointer;
 }
 </style>
