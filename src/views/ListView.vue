@@ -12,7 +12,7 @@
               <th @click="sort('firstname')">Eesnimi</th>
               <th @click="sort('surname')">Perekonnanimi</th>
               <th @click="sort('sex')">Sugu</th>
-              <th @click="sort('date')">Sünnikuupäev</th>
+              <th @click="sort('personal_code')">Sünnikuupäev</th>
               <th>Telefon</th>
             </tr>
             </thead>
@@ -22,7 +22,7 @@
                 <td>{{ item.firstname }}</td>
                 <td>{{ item.surname }}</td>
                 <td>{{ getSex(item.sex) }}</td>
-                <td>{{ getDate(item.personal_code) }}</td>
+                <td>{{ dateOfBirth(item.personal_code) }}</td>
                 <td>{{ item.phone }}</td>
               </tr>
               <tr v-if="opened.includes(item.id)">
@@ -35,7 +35,7 @@
                     </div>
                     <div class="flex-child green" id="body">
                       {{ truncate(item.body, 300) }}
-                      <a class="twn-button_small" href="http://proovitoo.twn.ee/article/{{item.id}}">Loe
+                      <a class="twn-button_small" :href="articleLink(item.id)">Loe
                         rohkem</a>
                     </div>
                   </div>
@@ -81,7 +81,9 @@ export default {
       currentPage: 1,
       pages: 0,
       articleId: '',
-      opened: []
+      opened: [],
+      sortingDate: '',
+
     };
   },
   methods: {
@@ -101,8 +103,15 @@ export default {
       if (s === this.currentSort) {
         this.currentSortDir = this.currentSortDir === 'asc' ? 'desc' : 'asc';
       }
+      // if (s === this.currentSort) {
+      //   this.currentSortDir = this.currentSortDir === 'desc' ? 'default' : 'desc';
+      // }
+      // if (s === this.currentSort) {
+      //   this.currentSortDir = this.currentSortDir === 'default' ? 'asc' : 'default';
+      // }
       this.currentSort = s;
     },
+
     pageCounter() {
       this.pages = Math.ceil(this.list.length / this.pageSize);
     },
@@ -115,7 +124,11 @@ export default {
       if (this.currentPage > 1) this.currentPage--;
     },
 
-    getDate(personalCode) {
+    articleLink(id) {
+      return 'http://proovitoo.twn.ee/article/'+id;
+    },
+
+    dateOfBirth(personalCode) {
       let yearPrefix = '';
       personalCode = personalCode.toString();
       if (personalCode[0] === '3' || personalCode[0] === '4') {
@@ -126,10 +139,11 @@ export default {
       let month = personalCode[3] + personalCode[4];
       let day = personalCode[5] + personalCode[6];
       let year = yearPrefix + personalCode[1] + personalCode[2];
-
-      let date = new Date(year + '-' + month + '-' + day);
+      let date = year + '-' + month + '-' + day;
+      this.sortingDate = year + month + day;
       return date;
     },
+
     getSex(sex) {
       if (sex === 'f') {
         return 'Naine';
@@ -150,7 +164,7 @@ export default {
     sortedList() {
       return this.list.sort((a, b) => {
         let modifier = 1;
-        if (this.currentSortDir === 'default') modifier = 0;
+        // if (this.currentSortDir === 'default') modifier = 0;
         if (this.currentSortDir === 'desc') modifier = -1;
         if (a[this.currentSort] < b[this.currentSort]) return -1 * modifier;
         if (a[this.currentSort] > b[this.currentSort]) return 1 * modifier;
