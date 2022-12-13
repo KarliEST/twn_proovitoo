@@ -1,17 +1,98 @@
 <!DOCTYPE html>
 <html lang="">
-  <head>
+<head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <link rel="icon" href="<%= BASE_URL %>favicon.ico">
     <title><%= htmlWebpackPlugin.options.title %></title>
-  </head>
-  <body>
-    <noscript>
-      <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
-    </noscript>
-    <div id="app"></div>
-    <!-- built files will be auto injected -->
-  </body>
+    <style>@import url(https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700;900&display=swap);
+
+    @font-face {
+        font-family: BoosterNextFY;
+        src: url(@/assets/fonts/BoosterNextFY-Bold.woff2) format("woff2"), url(@/assets/fonts/BoosterNextFY-Bold.woff) format("woff");
+        font-weight: 700;
+        font-style: normal;
+        font-display: swap
+    }
+
+    @font-face {
+        font-family: BoosterNextFY;
+        src: url(@/assets/fonts/BoosterNextFY-Light.woff2) format("woff2"), url(@/assets/fonts/BoosterNextFY-Light.woff) format("woff");
+        font-weight: 300;
+        font-style: normal;
+        font-display: swap
+    }
+
+    @font-face {
+        font-family: BoosterNextFY;
+        src: url(@/assets/fonts/BoosterNextFY-Black.woff2) format("woff2"), url(@/assets/fonts/BoosterNextFY-Black.woff) format("woff");
+        font-weight: 900;
+        font-style: normal;
+        font-display: swap
+    }
+
+    @font-face {
+        font-family: BoosterNextFY;
+        src: url(@/assets/fonts/BoosterNextFY-Thin.woff2) format("woff2"), url(@/assets/fonts/BoosterNextFY-Thin.woff) format("woff");
+        font-weight: 100;
+        font-style: normal;
+        font-display: swap
+    }
+
+    @font-face {
+        font-family: BoosterNextFY;
+        src: url(@/assets/fonts/BoosterNextFY-Regular.woff2) format("woff2"), url(@/assets/fonts/BoosterNextFY-Regular.woff) format("woff");
+        font-weight: 400;
+        font-style: normal;
+        font-display: swap
+    }
+
+    @font-face {
+        font-family: BoosterNextFY;
+        src: url(@/assets/fonts/BoosterNextFY-Medium.woff2) format("woff2"), url(@/assets/fonts/BoosterNextFY-Medium.woff) format("woff");
+        font-weight: 500;
+        font-style: normal;
+        font-display: swap
+    }
+
+    body, html {
+        background: var(--twn-backgroundColor);
+        margin: 0;
+        color: var(--twn-alternateTextColor);
+        font-family: var(--twn-textFont)
+    }
+
+    body {
+        font-size: var(--twn-rootFontSize)
+    }
+
+    * {
+        box-sizing: border-box
+    }
+
+    :root {
+        --twn-font: BoosterNextFY;
+        --twn-textFont: "Open Sans";
+        --twn-rootFontSize: 16px;
+        --twn-highlightColor: #14cc76;
+        --twn-textColor: #3a3d57;
+        --twn-alternateTextColor: #fff;
+        --twn-secondaryColor: #ff57a2;
+        --twn-backgroundColor: #3a3d57;
+        --twn-linkHoverColor: #03875c;
+        --twn-blockColor: #efefef;
+        --twn-menuWidth: 220px;
+        --twnMaxWidth: 1000px
+    }</style>
+    <link rel="stylesheet" href="styles.d3f96a741a8b41ec76d0.css" media="print" onload="this.media='all'">
+</head>
+<body>
+<noscript>
+    <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled.
+        Please enable it to continue.</strong>
+</noscript>
+<div id="app"></div>
+<!-- built files will be auto injected -->
+</body>
 </html>

@@ -1,11 +1,11 @@
 <template>
-  <div>
-    <div id="list">
+  <div class="page">
+    <div id="list" class="inline">
       <div>
         <h1>Nimekiri</h1>
       </div>
-      <div>
-        <div class="d-flex justify-content-center" id="table">
+      <div style="box-sizing: border-box">
+        <div class="table-wrapper" id="table">
           <table>
             <thead>
             <tr>
@@ -20,23 +20,23 @@
             <template v-for="item in sortedList" id="paginated-list">
               <tr class="pointer" @click="toggle(item.id)" :class="{ opened: opened.includes(item.id) }"
                   role="button" tabindex="0">
-                <td>{{ item.firstname }}</td>
-                <td>{{ item.surname }}</td>
-                <td>{{ item.sex }}</td>
-                <td>{{ item.dob }}</td>
-                <td>{{ item.phone }}</td>
+                <td style="width: 20%">{{ item.firstname }}</td>
+                <td style="width: 20%">{{ item.surname }}</td>
+                <td style="width: 20%">{{ item.sex }}</td>
+                <td style="width: 20%">{{ item.dob }}</td>
+                <td style="width: 20%">{{ item.phone }}</td>
               </tr>
-              <tr  v-if="opened.includes(item.id)">
+              <tr v-if="opened.includes(item.id)">
                 <td colspan="5" style="background-color: white">
                   <div class="tab">
                     <div id="image" class="d-flex justify-content-center">
                       <img class="image" :src="item.image.large" :alt="item.image.alt" :title="item.image.title"
                            role="img">
                     </div>
-                    <div class="d-flex justify-content-center" id="body">
-                      {{ truncate(item.body, 300) }}
-                      <a class="twn-button_small" :href="articleLink(item.id)">Loe
-                        rohkem</a>
+                    <div style="color: black" class="d-flex justify-content-center" id="body">
+                      {{ item.body}}
+<!--                      <p style="color: black">{{ truncate(item.body, 300) }}</p>-->
+                      <a class="tab-button" :href="articleLink(item.id)">Loe rohkem</a>
                     </div>
                   </div>
                 </td>
@@ -44,30 +44,26 @@
             </template>
             </tbody>
           </table>
-
         </div>
         <div>
-          <nav class="d-flex justify-content-center">
-            <button :disabled="currentPage===1" class="pagination-button pointer" id="prev-button" title="Previous page"
+          <pager class="d-flex justify-content-center">
+            <button :disabled="currentPage===1" class="pagination-button" id="prev-button" title="Previous page"
                     aria-label="Previous page"
                     @click="prevPage">&lt
             </button>
-            <button class="pointer" id="pagination-numbers" @click="currentPage = page" v-for="page in pages">
-              {{
-                page
-              }}
+            <button class="pagination-number .active" @click="currentPage = page" v-for="page in pages">
+              {{ page }}
             </button>
-            <button :disabled="currentPage===pages" class="pagination-button pointer" id="next-button" title="Next page"
+            <button :disabled="currentPage===pages" class="pagination-button" id="next-button" title="Next page"
                     aria-label="Next page" @click="nextPage">
               &gt
             </button>
-          </nav>
+          </pager>
         </div>
 
 
       </div>
     </div>
-    debug: sort={{ currentSort }}, dir={{ currentSortDir }}, currentpage={{ currentPage }}
   </div>
 </template>
 
@@ -113,26 +109,37 @@ export default {
 
     toggle(articleId) {
       const index = this.opened.indexOf(articleId);
-      // document.getElementById("body").innerHTML += this.json.intro;
+      // console.log(document.getElementById("body"));
       if (index > -1) {
         this.opened.splice(index, 1)
-      }
-      else {
+      } else {
+        // this.getParagraph(articleId)
         this.opened.push(articleId)
       }
     },
 
     sort(s) {
-      if (s!==this.currentSort||this.currentSortDir==='default') {
+      if (s !== this.currentSort || this.currentSortDir === 'default') {
         this.currentSortDir = 'asc';
-      }else if (s === this.currentSort && this.currentSortDir === 'asc') {
+      } else if (s === this.currentSort && this.currentSortDir === 'asc') {
         this.currentSortDir = 'desc';
       } else {
-          this.currentSortDir = 'default';
+        this.currentSortDir = 'default';
       }
       this.currentSort = s;
     },
 
+    // getParagraph(id) {
+    //   let i = 0;
+    //         while (this.tableArray[i]) {
+    //           if (this.tableArray[i].id === id) {
+    //             // document.getElementById("body").innerHTML += this.tableArray[i].body;
+    //             console.log(document.getElementById("body"))
+    //           }
+    //           i++;
+    //   }
+    //
+    // },
     pageCounter() {
       this.pages = Math.ceil(this.tableArray.length / this.pageSize);
     },
@@ -224,22 +231,109 @@ export default {
   background-color: #f1f1f1;
 }
 
-table {
-  font-family: 'Open Sans', sans-serif;
-  width: 750px;
-  border-collapse: collapse;
-  border: 3px solid #44475C;
-  margin: 10px 10px 0 10px;
+.inline {
+  position: relative;
 }
+
+.inline {
+  max-width: var(--twnMaxWidth);
+  min-height: 100%;
+  margin: 0 auto;
+}
+
+.page {
+  background-image: url(@/assets/imgs/bg-deco-left.svg), url(@/assets/imgs/bg-deco-right.svg);
+  background-repeat: no-repeat;
+  background-position: var(--twn-menuWidth) bottom, 100% 0;
+  background-size: 150px, 250px;
+  background-attachment: fixed;
+  display: block;
+  margin-left: var(--twn-menuWidth);
+  height: 100vh;
+  overflow: auto;
+  padding: 5rem 2.5rem;
+}
+p {
+  display: block;
+  margin-block-start: 1em;
+  margin-block-end: 1em;
+  margin-inline-start: 0px;
+  margin-inline-end: 0px;
+}
+
+table {
+  border-collapse: collapse;
+  min-width: 100%;
+  font-size: 1rem;
+  table-layout: fixed;
+}
+
+/*thead {*/
+/*  display: table-header-group;*/
+/*  vertical-align: middle;*/
+/*  border-color: inherit;*/
+/*}*/
+/*tr {*/
+/*  display: table-row;*/
+/*  vertical-align: inherit;*/
+/*  border-color: inherit;*/
+/*}*/
+/*th {*/
+/*  display: table-cell;*/
+/*  vertical-align: inherit;*/
+/*  font-weight: bold;*/
+/*}*/
+/*button {*/
+/*  appearance: auto;*/
+/*  writing-mode: horizontal-tb !important;*/
+/*  text-rendering: auto;*/
+/*  letter-spacing: normal;*/
+/*  word-spacing: normal;*/
+/*  line-height: normal;*/
+/*  text-transform: none;*/
+/*  text-indent: 0px;*/
+/*  text-shadow: none;*/
+/*  display: inline-block;*/
+/*  text-align: center;*/
+/*  align-items: flex-start;*/
+/*  margin: 0em;*/
+/*}*/
+/*tbody {*/
+/*  display: table-row-group;*/
+/*  vertical-align: middle;*/
+/*  border-color: inherit;*/
+/*}*/
+/*tr {*/
+/*  display: table-row;*/
+/*  vertical-align: inherit;*/
+/*  border-color: inherit;*/
+/*}*/
+/*td {*/
+/*  display: table-cell;*/
+/*  vertical-align: inherit;*/
+/*}*/
+/*table {*/
+/*  position: absolute;*/
+/*  alignment: center;*/
+/*  padding: 10px;*/
+/*  font-family: 'Open Sans', sans-serif;*/
+/*  width: 750px;*/
+/*  border-collapse: collapse;*/
+/*  border: 3px solid #44475C;*/
+/*  margin: 10px 10px 0 10px;*/
+/*}*/
+
+/*/-------------------------------------*/
 table th {
-  text-transform: uppercase;
+  /*text-transform: uppercase;*/
   text-align: left;
-  background: #44475C;
+  background: #333;
   color: #FFF;
   /*cursor: pointer;*/
   padding: 8px;
   min-width: 30px;
 }
+
 /*table th:hover {*/
 /*  background: #717699;*/
 /*}*/
@@ -248,9 +342,11 @@ table td {
   padding: 8px;
   border-right: 2px solid #7D82A8;
 }
+
 table td:last-child {
   border-right: none;
 }
+
 table tbody tr:nth-child(2n) td {
   background: #D4D8F9;
 }
@@ -264,14 +360,15 @@ table {
 }
 
 table th {
-  text-transform: uppercase;
+  /*text-transform: uppercase;*/
   text-align: left;
-  background: #44475C;
+  background: #333;
   color: #FFF;
   /*cursor: pointer;*/
   padding: 8px;
   min-width: 30px;
 }
+
 /*table th:hover {*/
 /*  background: #717699;*/
 /*}*/
@@ -280,12 +377,16 @@ table td {
   padding: 8px;
   border-right: 2px solid #7D82A8;
 }
+
 table td:last-child {
   border-right: none;
 }
+
 table tbody tr:nth-child(2n) td {
-  background: #D4D8F9;
+  background: #44475C;
+
 }
+
 .flex-container {
   display: flex;
 }
@@ -309,6 +410,7 @@ table tbody tr:nth-child(2n) td {
 
 .pagination-number,
 .pagination-button {
+  color: white;
   font-size: 1.1rem;
   background-color: transparent;
   border: none;
@@ -316,23 +418,52 @@ table tbody tr:nth-child(2n) td {
   cursor: pointer;
   height: 2.5rem;
   width: 2.5rem;
-  border-radius: .2rem;
+  border-radius: 2.5rem;
 }
 
 .pagination-number:hover,
 .pagination-button:not(.disabled):hover {
-  background: #fff;
+  background-color: transparent;
+  border-style: solid;
+  border-width: 1px;
+  border-color: white;
 }
 
 .pagination-number.active {
   color: #fff;
   background: #0085b6;
 }
+
 .tab {
   display: flex;
 
 }
 
+.table-wrapper {
+  display: block;
+  overflow: inherit;
+  width: 100%;
+}
+.tab-button {
+  font-size: .75rem;
+  padding: .85em 1.7em;
+  margin-top: 20px;
+  display: inline-block;
+  margin: 0 0 16px;
+  transition: background-color .25s ease-out;
+  font-family: var(--twn-font);
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  cursor: pointer;
+  background-color: #14cc76;
+  color: #3a3d57;
+  appearance: none;
+  border: none;
+  text-decoration: none;
+  border-bottom: .25rem solid #37945C;
+  text-transform: uppercase;
+}
 .pointer {
   cursor: pointer;
 }

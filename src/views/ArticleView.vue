@@ -6,6 +6,7 @@
       <div id="image"></div>
       <img :src="imagePath" :alt="imageAlt" :title="imageTitle">
       <div id="body"></div>
+      <div id="tags"></div>
     </div>
   </div>
 </template>
@@ -23,16 +24,16 @@ export default {
       title: json.title,
       intro: '',
       body: '',
-      imagePath:json.image.medium,
+      imagePath: json.image.medium,
       imageAlt: json.image.alt,
       imageTitle: json.image.title,
     };
   },
   methods: {
-    getIntroElement: function () {
-      console.log(json);
+    getIntroElement() {
       document.getElementById("intro").innerHTML += this.json.intro;
       document.getElementById("body").innerHTML += this.json.body;
+      document.getElementById("tags").innerHTML += this.json.tags;
     },
 
   },
