@@ -5,7 +5,7 @@
         <h1>Nimekiri</h1>
       </div>
       <div>
-        <div class="table" id="table">
+        <div class="d-flex justify-content-center" id="table">
           <table>
             <thead>
             <tr>
@@ -18,20 +18,22 @@
             </thead>
             <tbody>
             <template v-for="item in sortedList" id="paginated-list">
-              <tr @click="toggle(item.id)" :class="{ opened: opened.includes(item.id) }">
+              <tr class="pointer" @click="toggle(item.id)" :class="{ opened: opened.includes(item.id) }"
+                  role="button" tabindex="0">
                 <td>{{ item.firstname }}</td>
                 <td>{{ item.surname }}</td>
                 <td>{{ item.sex }}</td>
                 <td>{{ item.dob }}</td>
                 <td>{{ item.phone }}</td>
               </tr>
-              <tr v-if="opened.includes(item.id)">
-                <td>
-                  <div class="flex-container">
-                    <div id="image" class="flex-child magenta">
-                      <img class="image" :src="item.image.large" :alt="item.image.alt">
+              <tr  v-if="opened.includes(item.id)">
+                <td colspan="5" style="background-color: white">
+                  <div class="tab">
+                    <div id="image" class="d-flex justify-content-center">
+                      <img class="image" :src="item.image.large" :alt="item.image.alt" :title="item.image.title"
+                           role="img">
                     </div>
-                    <div class="flex-child green" id="body">
+                    <div class="d-flex justify-content-center" id="body">
                       {{ truncate(item.body, 300) }}
                       <a class="twn-button_small" :href="articleLink(item.id)">Loe
                         rohkem</a>
@@ -44,17 +46,25 @@
           </table>
 
         </div>
-        <nav class="pagination-container">
-          <button :disabled="currentPage===1" class="pagination-button pointer" id="prev-button" title="Previous page"
-                  aria-label="Previous page"
-                  @click="prevPage">&lt
-          </button>
-          <button class="pointer" id="pagination-numbers" @click="currentPage = page" v-for="page in pages">{{ page }}</button>
-          <button :disabled="currentPage===pages" class="pagination-button pointer" id="next-button" title="Next page"
-                  aria-label="Next page" @click="nextPage">
-            &gt
-          </button>
-        </nav>
+        <div>
+          <nav class="d-flex justify-content-center">
+            <button :disabled="currentPage===1" class="pagination-button pointer" id="prev-button" title="Previous page"
+                    aria-label="Previous page"
+                    @click="prevPage">&lt
+            </button>
+            <button class="pointer" id="pagination-numbers" @click="currentPage = page" v-for="page in pages">
+              {{
+                page
+              }}
+            </button>
+            <button :disabled="currentPage===pages" class="pagination-button pointer" id="next-button" title="Next page"
+                    aria-label="Next page" @click="nextPage">
+              &gt
+            </button>
+          </nav>
+        </div>
+
+
       </div>
     </div>
     debug: sort={{ currentSort }}, dir={{ currentSortDir }}, currentpage={{ currentPage }}
@@ -62,9 +72,7 @@
 </template>
 
 <script>
-import axios from "axios";
 import json from '@/assets/list.json'
-// import {truncate} from "fs";
 
 export default {
   name: "ListView",
@@ -72,15 +80,13 @@ export default {
   data() {
     return {
       json: json,
-      // list: json.list,
       currentSort: '',
-      currentSortDir: '',
+      currentSortDir: 'default',
       pageSize: 10,
       currentPage: 1,
       pages: 0,
       articleId: '',
       opened: [],
-      sortingDate: '',
       tableArray: [],
     };
   },
@@ -110,15 +116,19 @@ export default {
       // document.getElementById("body").innerHTML += this.json.intro;
       if (index > -1) {
         this.opened.splice(index, 1)
-      } else {
+      }
+      else {
         this.opened.push(articleId)
       }
     },
 
     sort(s) {
-      //if s == current sort, reverse
-      if (s === this.currentSort) {
-        this.currentSortDir = this.currentSortDir === 'asc' ? 'desc' : 'asc';
+      if (s!==this.currentSort||this.currentSortDir==='default') {
+        this.currentSortDir = 'asc';
+      }else if (s === this.currentSort && this.currentSortDir === 'asc') {
+        this.currentSortDir = 'desc';
+      } else {
+          this.currentSortDir = 'default';
       }
       this.currentSort = s;
     },
@@ -150,9 +160,7 @@ export default {
       let month = personalCode[3] + personalCode[4];
       let day = personalCode[5] + personalCode[6];
       let year = yearPrefix + personalCode[1] + personalCode[2];
-      let date = year + '-' + month + '-' + day;
-      this.sortingDate = year + month + day;
-      return date;
+      return year + '-' + month + '-' + day;
     },
 
     convertSex(sex) {
@@ -173,14 +181,13 @@ export default {
   computed: {
 
     sortedList() {
-      return this.tableArray.sort((a, b) => {
-        // return this.list.sort((a, b) => {
+      let arrayCopy = [...this.tableArray];
+      return arrayCopy.sort((a, b) => {
         let modifier = 1;
         if (this.currentSortDir === 'desc') modifier = -1;
+        if (this.currentSortDir === 'default') return 0;
         if (a[this.currentSort] < b[this.currentSort]) return -1 * modifier;
-        if (a[this.currentSort] > b[this.currentSort]) return 1 * modifier;
-        if (a[this.currentSort] === b[this.currentSort]) return 0 * modifier;
-
+        if (a[this.currentSort] > b[this.currentSort]) return modifier;
         return 0;
       }).filter((row, index) => {
         let start = (this.currentPage - 1) * this.pageSize;
@@ -209,8 +216,76 @@ export default {
 .image {
   width: 12.5rem;
   height: 12.5rem;
+  flex-shrink: 0;
+  flex-grow: 0;
+  background: center center no-repeat;
+  background-size: cover;
+  margin: .375rem;
+  background-color: #f1f1f1;
 }
 
+table {
+  font-family: 'Open Sans', sans-serif;
+  width: 750px;
+  border-collapse: collapse;
+  border: 3px solid #44475C;
+  margin: 10px 10px 0 10px;
+}
+table th {
+  text-transform: uppercase;
+  text-align: left;
+  background: #44475C;
+  color: #FFF;
+  /*cursor: pointer;*/
+  padding: 8px;
+  min-width: 30px;
+}
+/*table th:hover {*/
+/*  background: #717699;*/
+/*}*/
+table td {
+  text-align: left;
+  padding: 8px;
+  border-right: 2px solid #7D82A8;
+}
+table td:last-child {
+  border-right: none;
+}
+table tbody tr:nth-child(2n) td {
+  background: #D4D8F9;
+}
+
+table {
+  font-family: 'Open Sans', sans-serif;
+  width: 750px;
+  border-collapse: collapse;
+  border: 3px solid #44475C;
+  margin: 10px 10px 0 10px;
+}
+
+table th {
+  text-transform: uppercase;
+  text-align: left;
+  background: #44475C;
+  color: #FFF;
+  /*cursor: pointer;*/
+  padding: 8px;
+  min-width: 30px;
+}
+/*table th:hover {*/
+/*  background: #717699;*/
+/*}*/
+table td {
+  text-align: left;
+  padding: 8px;
+  border-right: 2px solid #7D82A8;
+}
+table td:last-child {
+  border-right: none;
+}
+table tbody tr:nth-child(2n) td {
+  background: #D4D8F9;
+}
 .flex-container {
   display: flex;
 }
@@ -253,6 +328,11 @@ export default {
   color: #fff;
   background: #0085b6;
 }
+.tab {
+  display: flex;
+
+}
+
 .pointer {
   cursor: pointer;
 }
