@@ -18,8 +18,7 @@
             </thead>
             <tbody>
             <template v-for="item in sortedList" id="paginated-list">
-              <tr class="pointer" @click="toggle(item.id)" :class="{ opened: opened.includes(item.id) }"
-                  role="button" tabindex="0">
+              <tr class="pointer" @click="toggle(item.id)" :class="{ opened: opened.includes(item.id) }">
                 <td style="width: 20%">{{ item.firstname }}</td>
                 <td style="width: 20%">{{ item.surname }}</td>
                 <td style="width: 20%">{{ item.sex }}</td>
@@ -34,8 +33,8 @@
                            role="img">
                     </div>
                     <div style="color: black" class="d-flex justify-content-center" id="body">
-                      {{ item.body}}
-<!--                      <p style="color: black">{{ truncate(item.body, 300) }}</p>-->
+                      <!--                                    <p>{{ truncate(item.body, 300) }}</p>-->
+                      {{ insertBody(item.body) }}
                       <a class="tab-button" :href="articleLink(item.id)">Loe rohkem</a>
                     </div>
                   </div>
@@ -46,19 +45,19 @@
           </table>
         </div>
         <div>
-          <pager class="d-flex justify-content-center">
+          <div class="d-flex justify-content-center">
             <button :disabled="currentPage===1" class="pagination-button" id="prev-button" title="Previous page"
                     aria-label="Previous page"
                     @click="prevPage">&lt
             </button>
-            <button class="pagination-number .active" @click="currentPage = page" v-for="page in pages">
+            <button class="pagination-number" @click="currentPage = page" v-for="page in pages">
               {{ page }}
             </button>
             <button :disabled="currentPage===pages" class="pagination-button" id="next-button" title="Next page"
                     aria-label="Next page" @click="nextPage">
               &gt
             </button>
-          </pager>
+          </div>
         </div>
 
 
@@ -68,14 +67,16 @@
 </template>
 
 <script>
-import json from '@/assets/list.json'
+// import json from '@/assets/list.json'
+import axios from "axios";
 
 export default {
   name: "ListView",
   el: '#list',
   data() {
     return {
-      json: json,
+      json: [],
+      url: 'https://midaiganes.irw.ee/api/list?limit=500',
       currentSort: '',
       currentSortDir: 'default',
       pageSize: 10,
@@ -84,12 +85,17 @@ export default {
       articleId: '',
       opened: [],
       tableArray: [],
+      toggleId: '',
+
     };
   },
   methods: {
 
-    generateTableArray() {
+    async generateTableArray() {
+      const json = await axios.get(this.url);
+      this.json = json.data;
       let list = this.json.list;
+      // console.log(this.json);
       let i = 0;
       while (list[i]) {
         this.tableArray.push({
@@ -106,14 +112,30 @@ export default {
       }
     },
 
+    insertBody(body) {
+      if (this.toggleId === -1) {
+        let element = document.getElementById('body');
+        return element.innerHTML = body;
+      }
+      return null;
+    },
 
     toggle(articleId) {
       const index = this.opened.indexOf(articleId);
-      // console.log(document.getElementById("body"));
+      if (articleId === this.articleId) {
+        this.opened.splice(index, 1);
+      }
+      this.toggleId = articleId;
+      // console.log(this.toggleIndex);
+      // if (this.toggleIndex === -1 || (this.toggleIndex === -1 && index === 0)) {
+      //   this.opened.splice(index, 1);
+      // }
+      // this.opened.push(articleId);
+
+
       if (index > -1) {
         this.opened.splice(index, 1)
       } else {
-        // this.getParagraph(articleId)
         this.opened.push(articleId)
       }
     },
@@ -129,17 +151,6 @@ export default {
       this.currentSort = s;
     },
 
-    // getParagraph(id) {
-    //   let i = 0;
-    //         while (this.tableArray[i]) {
-    //           if (this.tableArray[i].id === id) {
-    //             // document.getElementById("body").innerHTML += this.tableArray[i].body;
-    //             console.log(document.getElementById("body"))
-    //           }
-    //           i++;
-    //   }
-    //
-    // },
     pageCounter() {
       this.pages = Math.ceil(this.tableArray.length / this.pageSize);
     },
@@ -204,17 +215,9 @@ export default {
     },
 
   },
-  mounted() {
-    console.log(this.json.list);
-    this.generateTableArray();
-    console.log(this.tableArray);
+  async mounted() {
+    await this.generateTableArray();
     this.pageCounter();
-
-    // axios
-    //     .get('https://midaiganes.irw.ee/api/list?limit=500')
-    //     .then(response => (
-    //         this.json = response.data
-    //     ));
   },
 }
 </script>
@@ -253,6 +256,7 @@ export default {
   overflow: auto;
   padding: 5rem 2.5rem;
 }
+
 p {
   display: block;
   margin-block-start: 1em;
@@ -268,79 +272,18 @@ table {
   table-layout: fixed;
 }
 
-/*thead {*/
-/*  display: table-header-group;*/
-/*  vertical-align: middle;*/
-/*  border-color: inherit;*/
-/*}*/
-/*tr {*/
-/*  display: table-row;*/
-/*  vertical-align: inherit;*/
-/*  border-color: inherit;*/
-/*}*/
-/*th {*/
-/*  display: table-cell;*/
-/*  vertical-align: inherit;*/
-/*  font-weight: bold;*/
-/*}*/
-/*button {*/
-/*  appearance: auto;*/
-/*  writing-mode: horizontal-tb !important;*/
-/*  text-rendering: auto;*/
-/*  letter-spacing: normal;*/
-/*  word-spacing: normal;*/
-/*  line-height: normal;*/
-/*  text-transform: none;*/
-/*  text-indent: 0px;*/
-/*  text-shadow: none;*/
-/*  display: inline-block;*/
-/*  text-align: center;*/
-/*  align-items: flex-start;*/
-/*  margin: 0em;*/
-/*}*/
-/*tbody {*/
-/*  display: table-row-group;*/
-/*  vertical-align: middle;*/
-/*  border-color: inherit;*/
-/*}*/
-/*tr {*/
-/*  display: table-row;*/
-/*  vertical-align: inherit;*/
-/*  border-color: inherit;*/
-/*}*/
-/*td {*/
-/*  display: table-cell;*/
-/*  vertical-align: inherit;*/
-/*}*/
-/*table {*/
-/*  position: absolute;*/
-/*  alignment: center;*/
-/*  padding: 10px;*/
-/*  font-family: 'Open Sans', sans-serif;*/
-/*  width: 750px;*/
-/*  border-collapse: collapse;*/
-/*  border: 3px solid #44475C;*/
-/*  margin: 10px 10px 0 10px;*/
-/*}*/
 
-/*/-------------------------------------*/
 table th {
-  /*text-transform: uppercase;*/
   text-align: left;
   background: #333;
   color: #FFF;
-  /*cursor: pointer;*/
   padding: 8px;
   min-width: 30px;
 }
 
-/*table th:hover {*/
-/*  background: #717699;*/
-/*}*/
 table td {
   text-align: left;
   padding: 8px;
-  border-right: 2px solid #7D82A8;
 }
 
 table td:last-child {
@@ -355,27 +298,20 @@ table {
   font-family: 'Open Sans', sans-serif;
   width: 750px;
   border-collapse: collapse;
-  border: 3px solid #44475C;
   margin: 10px 10px 0 10px;
 }
 
 table th {
-  /*text-transform: uppercase;*/
   text-align: left;
   background: #333;
   color: #FFF;
-  /*cursor: pointer;*/
   padding: 8px;
   min-width: 30px;
 }
 
-/*table th:hover {*/
-/*  background: #717699;*/
-/*}*/
 table td {
   text-align: left;
   padding: 8px;
-  border-right: 2px solid #7D82A8;
 }
 
 table td:last-child {
@@ -385,19 +321,6 @@ table td:last-child {
 table tbody tr:nth-child(2n) td {
   background: #44475C;
 
-}
-
-.flex-container {
-  display: flex;
-}
-
-.flex-child {
-  flex: 1;
-  border: 2px solid yellow;
-}
-
-.flex-child:first-child {
-  margin-right: 20px;
 }
 
 .pagination-container {
@@ -422,16 +345,17 @@ table tbody tr:nth-child(2n) td {
 }
 
 .pagination-number:hover,
-.pagination-button:not(.disabled):hover {
+.pagination-button:not(:disabled):hover {
   background-color: transparent;
   border-style: solid;
   border-width: 1px;
   border-color: white;
 }
 
-.pagination-number.active {
-  color: #fff;
-  background: #0085b6;
+
+.pagination-number:focus {
+  color: black;
+  background: white;
 }
 
 .tab {
@@ -444,6 +368,7 @@ table tbody tr:nth-child(2n) td {
   overflow: inherit;
   width: 100%;
 }
+
 .tab-button {
   font-size: .75rem;
   padding: .85em 1.7em;
@@ -464,7 +389,14 @@ table tbody tr:nth-child(2n) td {
   border-bottom: .25rem solid #37945C;
   text-transform: uppercase;
 }
+
+.opened {
+  background: white;
+  color: black;
+}
+
 .pointer {
   cursor: pointer;
 }
+
 </style>

@@ -5,7 +5,8 @@
 
         <div>
           <router-link to="/">
-            <img aria-label="TWN logo" class="logo" tabindex="0" src="/src/assets/imgs/logo.svg">
+<!--            Used web source for the logo testing, because was getting ERROR 431 with provided one-->
+            <img aria-label="TWN logo" class="logo" tabindex="0" src="http://proovitoo.twn.ee/assets/imgs/logo.svg">
           </router-link>
         </div>
         <ul>

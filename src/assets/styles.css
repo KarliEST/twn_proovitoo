@@ -116,7 +116,7 @@ body {
 }
 
 .page {
-    background-image: url(/assets/imgs/bg-deco-left.svg),url(/assets/imgs/bg-deco-right.svg);
+    background-image: url(@/assets/imgs/bg-deco-left.svg),url(@/assets/imgs/bg-deco-right.svg);
     background-repeat: no-repeat;
     background-position: var(--twn-menuWidth) bottom,100% 0;
     background-size: 150px,250px;
