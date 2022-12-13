@@ -1,5 +1,8 @@
 # twn_proovitoo
 
+This is my test for trinidad Wiseman OÜ \
+NB! Table is sortable, just the arrows are missing. Headers are clickable. :)
+
 ## Project setup
 ```
 npm install
@@ -10,10 +13,12 @@ npm install
 npm run serve
 ```
 
-### Compiles and minifies for production
-```
-npm run build
-```
+[//]: # ()
+[//]: # (### Compiles and minifies for production)
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+[//]: # (```)
+
+[//]: # (npm run build)
+
+[//]: # (```)
+

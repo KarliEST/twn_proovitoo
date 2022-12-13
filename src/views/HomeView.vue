@@ -1,9 +1,10 @@
 <template>
   <div class="page">
-    <div>
-      <h1 style="color: var(--twn-highlightColor)">TRINIDAD WISEMAN</h1>
-      <h2>SPA proovitöö</h2>
-      <h2>Karli Kullasepp</h2>
+    <div class="center-of-page">
+            <h1 style="color: var(--twn-highlightColor); padding: 60px;scale: 2 ">TRINIDAD WISEMAN</h1>
+
+      <h2 style="padding: 30px; scale: 2">SPA proovitöö <br>
+        Karli Kullasepp</h2>
     </div>
   </div>
 </template>
@@ -31,5 +32,13 @@ export default {
   height: 100vh;
   overflow: auto;
   padding: 5rem 2.5rem;
+}
+
+.center-of-page {
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  margin-top: -50px;
+  margin-left: -50px;
 }
 </style>

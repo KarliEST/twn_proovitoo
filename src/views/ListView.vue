@@ -18,7 +18,8 @@
             </thead>
             <tbody>
             <template v-for="item in sortedList" id="paginated-list">
-              <tr class="pointer" @click="toggle(item.id)" :class="{ opened: opened.includes(item.id) }">
+              <tr class="pointer" @click="toggle(item.id); insertBody(item.body)"
+                  :class="{ opened: opened.includes(item.id) }">
                 <td style="width: 20%">{{ item.firstname }}</td>
                 <td style="width: 20%">{{ item.surname }}</td>
                 <td style="width: 20%">{{ item.sex }}</td>
@@ -26,7 +27,7 @@
                 <td style="width: 20%">{{ item.phone }}</td>
               </tr>
               <tr v-if="opened.includes(item.id)">
-                <td colspan="5" style="background-color: white">
+                <td colspan="5" class="tab-open">
                   <div class="tab">
                     <div id="image" class="d-flex justify-content-center">
                       <img class="image" :src="item.image.large" :alt="item.image.alt" :title="item.image.title"
@@ -34,8 +35,9 @@
                     </div>
                     <div style="color: black" class="d-flex justify-content-center" id="body">
                       <!--                                    <p>{{ truncate(item.body, 300) }}</p>-->
+                      <!--                      {{ body }}-->
                       {{ insertBody(item.body) }}
-                      <a class="tab-button" :href="articleLink(item.id)">Loe rohkem</a>
+                      <a class="tab-button" :href="articleLink(item.id)" target="_blank">Loe rohkem</a>
                     </div>
                   </div>
                 </td>
@@ -50,7 +52,8 @@
                     aria-label="Previous page"
                     @click="prevPage">&lt
             </button>
-            <button class="pagination-number" @click="currentPage = page" v-for="page in pages">
+            <button class="pagination-number" @click="currentPage = page"
+                    v-for="page in pages" :class="{highlight:currentPage===page}">
               {{ page }}
             </button>
             <button :disabled="currentPage===pages" class="pagination-button" id="next-button" title="Next page"
@@ -58,9 +61,8 @@
               &gt
             </button>
           </div>
+
         </div>
-
-
       </div>
     </div>
   </div>
@@ -75,7 +77,6 @@ export default {
   el: '#list',
   data() {
     return {
-      json: [],
       url: 'https://midaiganes.irw.ee/api/list?limit=500',
       currentSort: '',
       currentSortDir: 'default',
@@ -86,16 +87,14 @@ export default {
       opened: [],
       tableArray: [],
       toggleId: '',
-
+      body: [],
     };
   },
   methods: {
 
     async generateTableArray() {
       const json = await axios.get(this.url);
-      this.json = json.data;
-      let list = this.json.list;
-      // console.log(this.json);
+      let list = json.data.list;
       let i = 0;
       while (list[i]) {
         this.tableArray.push({
@@ -113,26 +112,17 @@ export default {
     },
 
     insertBody(body) {
-      if (this.toggleId === -1) {
+      if (document.getElementById('body') !== null) {
         let element = document.getElementById('body');
-        return element.innerHTML = body;
+        element.innerHTML = body;
       }
       return null;
     },
 
     toggle(articleId) {
       const index = this.opened.indexOf(articleId);
-      if (articleId === this.articleId) {
-        this.opened.splice(index, 1);
-      }
+      this.opened.splice(index, 1);
       this.toggleId = articleId;
-      // console.log(this.toggleIndex);
-      // if (this.toggleIndex === -1 || (this.toggleIndex === -1 && index === 0)) {
-      //   this.opened.splice(index, 1);
-      // }
-      // this.opened.push(articleId);
-
-
       if (index > -1) {
         this.opened.splice(index, 1)
       } else {
@@ -164,7 +154,7 @@ export default {
     },
 
     articleLink(id) {
-      return 'http://proovitoo.twn.ee/article/' + id;
+      return 'https://proovitoo.twn.ee/article/' + id;
     },
 
     dateOfBirth(personalCode) {
@@ -184,10 +174,13 @@ export default {
     convertSex(sex) {
       if (sex === 'f') {
         return 'Naine';
-      } else {
+      } else if (sex === 'm') {
         return 'Mees';
+      } else {
+        return 'Unknown';
       }
     },
+
     truncate(value, length) {
       if (value.length > length) {
         return value.substring(0, length) + "...";
@@ -232,13 +225,11 @@ export default {
   background-size: cover;
   margin: .375rem;
   background-color: #f1f1f1;
+  object-fit: cover
 }
 
 .inline {
   position: relative;
-}
-
-.inline {
   max-width: var(--twnMaxWidth);
   min-height: 100%;
   margin: 0 auto;
@@ -270,34 +261,8 @@ table {
   min-width: 100%;
   font-size: 1rem;
   table-layout: fixed;
-}
-
-
-table th {
-  text-align: left;
-  background: #333;
-  color: #FFF;
-  padding: 8px;
-  min-width: 30px;
-}
-
-table td {
-  text-align: left;
-  padding: 8px;
-}
-
-table td:last-child {
-  border-right: none;
-}
-
-table tbody tr:nth-child(2n) td {
-  background: #D4D8F9;
-}
-
-table {
   font-family: 'Open Sans', sans-serif;
   width: 750px;
-  border-collapse: collapse;
   margin: 10px 10px 0 10px;
 }
 
@@ -318,9 +283,9 @@ table td:last-child {
   border-right: none;
 }
 
+/* TODO: CSS jama. Kirjutab üle avatud rea paaris arvu headeri backgroundi värvi? */
 table tbody tr:nth-child(2n) td {
   background: #44475C;
-
 }
 
 .pagination-container {
@@ -352,15 +317,22 @@ table tbody tr:nth-child(2n) td {
   border-color: white;
 }
 
-
 .pagination-number:focus {
   color: black;
   background: white;
 }
 
+.highlight {
+  color: black;
+  background: white;
+}
+
+.pagination-button:disabled {
+  cursor: default;
+}
+
 .tab {
   display: flex;
-
 }
 
 .table-wrapper {
@@ -391,8 +363,12 @@ table tbody tr:nth-child(2n) td {
 }
 
 .opened {
-  background: white;
-  color: black;
+  background-color: white !important;
+  color: black !important;
+}
+
+.tab-open {
+  background-color: white !important;
 }
 
 .pointer {
