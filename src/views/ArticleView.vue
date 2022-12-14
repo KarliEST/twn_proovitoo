@@ -17,7 +17,8 @@
 
 <script>
 import axios from "axios";
-// import json from '@/assets/article.json'
+// Used json file for development, before using API.
+// import json from '@/assets/article.json'  //
 
 export default {
   name: "ArticleView",
@@ -26,8 +27,6 @@ export default {
     return {
       json: [],
       url: 'https://midaiganes.irw.ee/api/list/972d2b8a',
-      intro: '',
-      body: '',
       imagePath: '',
       imageAlt: '',
       imageTitle: '',
