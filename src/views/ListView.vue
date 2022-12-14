@@ -18,7 +18,7 @@
             </thead>
             <tbody>
             <template v-for="item in sortedList" id="paginated-list">
-              <tr class="pointer" @click="toggle(item.id); insertBody(item.body)"
+              <tr class="pointer" @click="toggle(item.id)"
                   :class="{ opened: opened.includes(item.id) }">
                 <td style="width: 20%">{{ item.firstname }}</td>
                 <td style="width: 20%">{{ item.surname }}</td>
@@ -34,15 +34,13 @@
                            role="img">
                     </div>
                     <div style="color: black" class="d-flex justify-content-center" id="body">
-                      <!--                                    <p>{{ truncate(item.body, 300) }}</p>-->
-                      <!--                      {{ body }}-->
-                      {{ insertBody(item.body) }}
+                      <p>{{generateBody(item.body)}}</p>
                       <a class="tab-button" :href="articleLink(item.id)" target="_blank">Loe rohkem</a>
                     </div>
                   </div>
                 </td>
               </tr>
-            </template>
+            </template >
             </tbody>
           </table>
         </div>
@@ -69,6 +67,7 @@
 </template>
 
 <script>
+// Used json file for development, before using API.
 // import json from '@/assets/list.json'
 import axios from "axios";
 
@@ -111,12 +110,10 @@ export default {
       }
     },
 
-    insertBody(body) {
-      if (document.getElementById('body') !== null) {
-        let element = document.getElementById('body');
-        element.innerHTML = body;
-      }
-      return null;
+    generateBody(body) {
+      body = body.toString();
+      body = body.replace(/<p>(.*)<\/p>/g, "$1\n");
+      return this.truncate(body,300);
     },
 
     toggle(articleId) {
